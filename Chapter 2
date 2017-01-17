@@ -211,6 +211,70 @@ as.matrix(posterior)
 # Grid approximation - marbles ============================================
 
 
+# quadratic approximation ======================================================
+library(rethinking)
+globe.qa <- map(
+  alist(
+    w ~ binom(9, p), # binomial likelihood
+    p ~ dunif(0, 1) # uniform prior
+  ),
+  data = list(w = 6)
+)
+# Will need to play around with this when i have a console
+# But basically this finds that maximum posterior likelihood -- which proportion
+#  of water is the globe most likely to be, given 6 out of 9 tosses are water, 
+#   along with the standard deviation of the curve.
+# For quadratic approximation, you only need the posterior mode (max of curve)
+#   and the curvature of the peak.
+# So this will find the posterior mode, look at the curvature around the peak,
+#   and it'll then fit a quadratic model to approximate the curve. This works
+#   because you can assume the normal / gaussian distribution with a quadratic
+#   funtion, because the log of a normal distribution forms a parabola.
+# display summary of quadratic approximation
+precis(globe.qa)
 
-STOPPED AT QUADRATIC APPROXIMATION ON PAGE 41
+# analytical calculation
+w <- 6
+n <- 9
+curve(dbeta(x, w + 1, n - w - 1), from = 0, to = 1)
+curve(dnorm(x, .67, .16), lty = 2, add = TRUE)
+# the details of this don't matter, the point is that this is 100% correct
+#  and can be used to compare with the quadratic approximation.
+# The takeaway here is that the quadratic approximation fails miserably when
+#  the number of observations is low, but gets pretty close when it's high.
+# A lot of statistical procedures use quadratic approximations, or similar, 
+#   that don't work well on small data sets.
+# If you have a small number of obs., grid approximation is a good option
+#   because its bad performance isn't a problem and it's accurate.
+# quadratic approximation ======================================================
+
+
+
+# summary ====================================================================
+# the target of bayesian inference is a posterior probability distribution,
+#  which states the relative number of ways the conjectured cause of the
+#  data (the underlying population data) could have caused the data (the 
+#  sample of outcomes that you have). The relative numbers indicate
+#  plausibilities of different conjectures. these plausibilities are updated
+#  as you get more observations of data, in a process known as Bayesian
+#  updating (taking the prior and multiplying it by the likelihoods to get
+#  to the posterior).
+# A bayesian model is a composite of a likelihood, a choice of parameters,
+#  and a prior. The likelihood is the plausibility of each possilbe value
+#  of the parameters, before accounting for the data. computing plausibilities
+#  happens with bayes theorem, and results in the posterior distribution.
+# parameters are things like: is the event binomial, how many observations are
+#  there, what are the options for getting to a certain outcomes, etc.
+# Bayesian models are fit to data with numerical techniques, inlcuidng gird
+#  approximation, quadratic approximation, and markov monte carlo.
+# grid approx is great but doesn't scale and is computationally intense,
+#  quadratic is computationally efficient but bad with small number of obs.,
+#  and monte carlo is good for the complexity of multilevel models.
+# summary ====================================================================
+
+
+# practice ====================================================================
+2E1: 2 - probability of rain, given that it's monday
+2E2: PAGE 45
+# practice ====================================================================
 
