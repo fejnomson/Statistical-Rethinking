@@ -274,7 +274,26 @@ curve(dnorm(x, .67, .16), lty = 2, add = TRUE)
 
 
 # practice ====================================================================
-2E1: 2 - probability of rain, given that it's monday
-2E2: PAGE 45
+# 2E1: 2 - probability of rain, given that it's monday
+# 2E2: PAGE 45
+
+
+# 2M1 - a
+outcomes <- c('w', 'l', 'w', 'w', 'w', 'l', 'w', 'l', 'w')
+p_grid <- seq(from = 0, to = 1, length.out = 200) # take 20 samples of assumed frequency of water
+prior <- rep(1, length(p_grid)) # no prior to start with; blank slate
+ws <- 0
+for (i in seq_along(outcomes)) {
+  message('n = ', i) # print number of trial this is
+  outcome <- outcomes[i]
+  message('Just drew a ', outcome) # print outcome of current trial
+  if (outcome == 'w') ws <- ws + 1
+  likelihood <- dbinom(ws, size = i, prob = p_grid)
+  unstd.posterior <- likelihood * prior # if you throw out the prior, you're omitting info that you've gained in each stage. It's not the just last stage that matters; it's the info you gain from each in aggregate
+  posterior <- unstd.posterior / sum(unstd.posterior)
+  plot(p_grid, posterior, type = 'b', xlab = 'probability of water', ylab = 'posterior probability')
+  Sys.sleep(1) # stop for 3 seconds to look at the plot
+  prior <- posterior # update the prior after each run
+}
 # practice ====================================================================
 
